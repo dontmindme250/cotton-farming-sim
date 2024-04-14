@@ -154,7 +154,7 @@ def save_game(farm):
 						"money": farm.money,
 						"objectives": farm.objectives,
 						"achievements": farm.achievements,
-						"interactions_enabled": farm.interactions_enabled, # Save the state of interactions
+						"interactions_enabled": farm.interactions_enabled,
 				}
 				json.dump(data, file)
 		print("Game saved.")
@@ -175,7 +175,7 @@ def load_game():
 				farm.money = data["money"]
 				farm.objectives = data["objectives"]
 				farm.achievements = data["achievements"]
-				farm.interactions_enabled = data.get("interactions_enabled", True) # Load interactions state
+				farm.interactions_enabled = data.get("interactions_enabled", True)
 				print("Game loaded.")
 				return farm
 		else:
@@ -246,7 +246,7 @@ def main():
 										farm.buy_upgrade(choice)
 				else:
 						print("Interactions are temporarily disabled due to an event.")
-				time.sleep(0.1)  # update speed
+				time.sleep(0)  # update speed
 
 if __name__ == "__main__":
 		main()
