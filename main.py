@@ -215,6 +215,7 @@ def save_game(farm):
             "auto_cotton_multiplier": farm.auto_cotton_multiplier,
             "total_clicks": farm.total_clicks,
             "money": farm.money,
+            "current_season": farm.current_season,
             "objectives": farm.objectives,
             "achievements": farm.achievements,
             "interactions_enabled": farm.interactions_enabled,
@@ -236,6 +237,7 @@ def load_game():
         farm.auto_cotton_multiplier = data["auto_cotton_multiplier"]
         farm.total_clicks = data["total_clicks"]
         farm.money = data["money"]
+        farm.current_season = data["current_season"]
         farm.objectives = data["objectives"]
         farm.achievements = data["achievements"]
         farm.interactions_enabled = data.get("interactions_enabled", True)
@@ -295,71 +297,7 @@ def main():
             choice = input("Enter the number of the upgrade you want to buy or 'q' to go back.\n")
             if choice != 'q':
                 farm.buy_upgrade(choice)
-        time.sleep(0.1)  # update speed
-
-if __name__ == "__main__":
-    main()
-    self.season_change_time = time.time() + random.randint(600, 900)
-    print(f"The season has changed to {self.current_season}.")
-
-    def harvest_cotton(self):
-        if self.interactions_enabled:
-            season_effect = self.season_effects[self.current_season]["cotton_per_click"]
-            self.cotton += int(self.cotton_per_click * self.click_multiplier * season_effect)
-            self.total_clicks += 1
-
-    def buy_click_multiplier(self):
-        if self.interactions_enabled:
-            if self.cotton >= self.click_multiplier_cost:
-                self.cotton -= self.click_multiplier_cost
-                self.click_multiplier *= 2
-                self.click_multiplier_cost *= 2
-                clear_screen()
-                print("You bought a click multiplier!")
-            else:
-                print("Not enough cotton!")
-
-    def buy_auto_cotton_multiplier(self):
-        if self.interactions_enabled:
-            if self.cotton >= self.auto_cotton_multiplier_cost:
-                self.cotton -= self.auto_cotton_multiplier_cost
-                self.auto_cotton_multiplier += 1
-                self.auto_cotton_multiplier_cost *= 2
-                clear_screen()
-                print("You bought an auto cotton multiplier!")
-            else:
-                print("Not enough cotton!")
-
-    def buy_shop_item(self, choice):
-        if self.interactions_enabled:
-            if choice in self.shop_items:
-                item = self.shop_items[choice]
-                if self.money >= item["cost"]:
-                    self.money -= item["cost"]
-                    if choice in ["1", "2"]:
-                        self.cotton_per_second += item["effect"]
-                    elif choice == "3":
-                        self.auto_cotton_multiplier += 1
-                    clear_screen()
-                    print(f"You bought {item['name']}!")
-                else:
-                    print("Not enough money!")
-
-    def buy_upgrade(self, choice):
-        if self.interactions_enabled:
-            if choice in self.upgrades:
-                upgrade = self.upgrades[choice]
-                if self.money >= upgrade["cost"]:
-                    self.money -= upgrade["cost"]
-                    if choice == "1":
-                        self.cotton_per_click += upgrade["effect"]
-                    elif choice in ["2", "3"]:
-                        self.cotton_per_second += upgrade["effect"]
-                    clear_screen()
-                    print(f"You bought {upgrade['name']}!")
-                else:
-                    print("Not enough money!")
-        time.sleep(0.1)  # update speed
+        time.sleep(0)  # update speed
 
 if __name__ == "__main__":
     main()
