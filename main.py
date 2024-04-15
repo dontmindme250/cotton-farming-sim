@@ -3,8 +3,10 @@ import os
 import random
 import time
 
+
 def ClearScreen():
 	os.system('cls' if os.name == 'nt' else 'clear')
+
 
 class Farm:
 
@@ -115,21 +117,23 @@ class Farm:
 		self.interactions_enabled = True
 
 		def harvest_cotton(self):
-				if self.interactions_enabled:
-						season_effect = self.season_effects[self.current_season]["cotton_per_click"]
-						self.cotton += round(self.cotton_per_click * self.click_multiplier * season_effect)
-						self.total_clicks += 1
+			if self.interactions_enabled:
+				season_effect = self.season_effects[
+				    self.current_season]["cotton_per_click"]
+				self.cotton += round(self.cotton_per_click * self.click_multiplier *
+				                     season_effect)
+				self.total_clicks += 1
 
 		def buy_click_multiplier(self):
-				if self.interactions_enabled:
-						if self.cotton >= self.click_multiplier_cost:
-								self.cotton -= self.click_multiplier_cost
-								self.click_multiplier *= 2
-								self.click_multiplier_cost *= 2
-								ClearScreen()
-								print("You bought a click multiplier!")
-						else:
-								print("Not enough cotton!")
+			if self.interactions_enabled:
+				if self.cotton >= self.click_multiplier_cost:
+					self.cotton -= self.click_multiplier_cost
+					self.click_multiplier *= 2
+					self.click_multiplier_cost *= 2
+					ClearScreen()
+					print("You bought a click multiplier!")
+				else:
+					print("Not enough cotton!")
 
 	def change_season(self):
 		if time.time() >= self.season_change_time:
@@ -189,15 +193,15 @@ class Farm:
 			print("You cannot buy items during this event.")
 
 		def buy_auto_cotton_multiplier(self):
-				if self.interactions_enabled:
-						if self.cotton >= self.auto_cotton_multiplier_cost:
-								self.cotton -= self.auto_cotton_multiplier_cost
-								self.auto_cotton_multiplier += 1
-								self.auto_cotton_multiplier_cost *= 2
-								ClearScreen()
-								print("You bought an auto cotton multiplier!")
-						else:
-								print("Not enough cotton!")
+			if self.interactions_enabled:
+				if self.cotton >= self.auto_cotton_multiplier_cost:
+					self.cotton -= self.auto_cotton_multiplier_cost
+					self.auto_cotton_multiplier += 1
+					self.auto_cotton_multiplier_cost *= 2
+					ClearScreen()
+					print("You bought an auto cotton multiplier!")
+				else:
+					print("Not enough cotton!")
 
 	def buy_upgrade(self, choice):
 		if self.interactions_enabled:
@@ -217,66 +221,75 @@ class Farm:
 			print("You cannot buy upgrades during this event.")
 
 		def buy_shop_item(self, choice):
-				if self.interactions_enabled:
-						if choice in self.shop_items:
-								item = self.shop_items[choice]
-								if self.money >= item["cost"]:
-										self.money -= item["cost"]
-										if choice == "1" or choice == "2":
-												self.cotton_per_second += item["effect"]
-										elif choice == "3":
-												self.auto_cotton_multiplier += 1
-										ClearScreen()
-										print(f"You bought {item['name']}!")
-								else:
-										print("Not enough money!")
-				else:
-						print("You cannot buy items during this event.")
+			if self.interactions_enabled:
+				if choice in self.shop_items:
+					item = self.shop_items[choice]
+					if self.money >= item["cost"]:
+						self.money -= item["cost"]
+						if choice == "1" or choice == "2":
+							self.cotton_per_second += item["effect"]
+						elif choice == "3":
+							self.auto_cotton_multiplier += 1
+						ClearScreen()
+						print(f"You bought {item['name']}!")
+					else:
+						print("Not enough money!")
+			else:
+				print("You cannot buy items during this event.")
 
 		def buy_upgrade(self, choice):
-				if self.interactions_enabled:
-						if choice in self.upgrades:
-								upgrade = self.upgrades[choice]
-								if self.money >= upgrade["cost"]:
-										self.money -= upgrade["cost"]
-										if choice == "1":
-												self.cotton_per_click += upgrade["effect"]
-										elif choice == "2" or choice == "3":
-												self.cotton_per_second += upgrade["effect"]
-										ClearScreen()
-										print(f"You bought {upgrade['name']}!")
-								else:
-										print("Not enough money!")
-				else:
-						print("You cannot buy upgrades during this event.")
+			if self.interactions_enabled:
+				if choice in self.upgrades:
+					upgrade = self.upgrades[choice]
+					if self.money >= upgrade["cost"]:
+						self.money -= upgrade["cost"]
+						if choice == "1":
+							self.cotton_per_click += upgrade["effect"]
+						elif choice == "2" or choice == "3":
+							self.cotton_per_second += upgrade["effect"]
+						ClearScreen()
+						print(f"You bought {upgrade['name']}!")
+					else:
+						print("Not enough money!")
+			else:
+				print("You cannot buy upgrades during this event.")
 
 		def auto_harvest(self):
-				if self.interactions_enabled:
-						season_effect = self.season_effects[self.current_season]["cotton_per_second"]
-						self.cotton += self.auto_cotton_multiplier * self.cotton_per_second * season_effect
+			if self.interactions_enabled:
+				season_effect = self.season_effects[
+				    self.current_season]["cotton_per_second"]
+				self.cotton += self.auto_cotton_multiplier * self.cotton_per_second * season_effect
 
 		def display_status(self):
-				print(f"Money : {self.money}")
-				print(f"Current Cotton : {self.cotton}")
-				print(f"Total Clicks : {self.total_clicks}")
-				print()
-				print(f"Cotton per Click : {self.cotton_per_click * self.click_multiplier}")
-				print(f"Cotton per Second : {self.cotton_per_second}")
-				print(f"Auto Cotton Multiplier : {self.auto_cotton_multiplier}")
-				print()
-				print(f"Auto Cotton Multiplier Cost : {self.auto_cotton_multiplier_cost}")
-				print(f"Click Multiplier Cost : {self.click_multiplier_cost}")
-				print()
+			print(f"Money : {self.money}")
+			print(f"Current Cotton : {self.cotton}")
+			print(f"Total Clicks : {self.total_clicks}")
+			print()
+			print(
+			    f"Cotton per Click : {self.cotton_per_click * self.click_multiplier}"
+			)
+			print(f"Cotton per Second : {self.cotton_per_second}")
+			print(f"Auto Cotton Multiplier : {self.auto_cotton_multiplier}")
+			print()
+			print(
+			    f"Auto Cotton Multiplier Cost : {self.auto_cotton_multiplier_cost}")
+			print(f"Click Multiplier Cost : {self.click_multiplier_cost}")
+			print()
 
-				print("Shop Items:")
-				for key, item in self.shop_items.items():
-						print(f"{key}: {item['name']} - Cost : {item['cost']} | Effect : {item['description']}")
-				print()
+			print("Shop Items:")
+			for key, item in self.shop_items.items():
+				print(
+				    f"{key}: {item['name']} - Cost : {item['cost']} | Effect : {item['description']}"
+				)
+			print()
 
-				print("Upgrades:")
-				for key, upgrade in self.upgrades.items():
-						print(f"{key}: {upgrade['name']} - Cost : {upgrade['cost']} | Effect : {upgrade['description']}")
-				print()
+			print("Upgrades:")
+			for key, upgrade in self.upgrades.items():
+				print(
+				    f"{key}: {upgrade['name']} - Cost : {upgrade['cost']} | Effect : {upgrade['description']}"
+				)
+			print()
+
 
 def save_game(farm):
 	with open("savegame.json", "w") as file:
@@ -322,22 +335,23 @@ def load_game():
 
 
 def main_menu():
-		print("Welcome to Cotton Farming Simulator!")
-		print("1. New Game")
-		print("2. Load Game")
-		print("3. Quit")
-		choice = input("Enter your choice: ")
-		ClearScreen()
-		if choice == "1":
-				return Farm()
-		elif choice == "2":
-				return load_game()
-		elif choice == "3":
-				print("Goodbye!")
-				exit()
-		else:
-				print("Invalid choice. Please try again.")
-				return main_menu()
+	print("Welcome to Cotton Farming Simulator!")
+	print("1. New Game")
+	print("2. Load Game")
+	print("3. Quit")
+	choice = input("Enter your choice: ")
+	ClearScreen()
+	if choice == "1":
+		return Farm()
+	elif choice == "2":
+		return load_game()
+	elif choice == "3":
+		print("Goodbye!")
+		exit()
+	else:
+		print("Invalid choice. Please try again.")
+		return main_menu()
+
 
 def check_objectives(farm):
 	for key, objective in farm.objectives.items():
@@ -358,49 +372,60 @@ def check_achievements(farm):
 
 
 def main():
-		farm = main_menu()
-		FarmVars = Farm()
-		while True:
-				check_objectives(farm)
-				check_achievements(farm)
-				farm.auto_harvest()
-				farm.display_status()
-				farm.change_season()
-				action = input("Press 'h' to harvest cotton, 'b' to buy click multiplier, 'a' to buy auto cotton multiplier, 's' to open shop, 'u' to buy upgrade, 'save' to save game, or 'q' to quit.\n").lower()
+	farm = main_menu()
+	FarmVars = Farm()
+	while True:
+		check_objectives(farm)
+		check_achievements(farm)
+		farm.auto_harvest()
+		farm.display_status()
+		farm.change_season()
+		action = input(
+		    "Press 'h' to harvest cotton, 'b' to buy click multiplier, 'a' to buy auto cotton multiplier, 's' to open shop, 'u' to buy upgrade, 'save' to save game, or 'q' to quit.\n"
+		).lower()
+		ClearScreen()
+		if action == "save":
+			save_game(farm)
+		elif action == "q":
+			print("Thanks for playing!")
+			break
+		elif farm.interactions_enabled:
+			if action == "h":
+				farm.harvest_cotton()
+			elif action == "b":
+				farm.buy_click_multiplier()
+			elif action == "a":
+				farm.buy_auto_cotton_multiplier()
+			elif action == "s":
+				print("Shop Items:")
+				for key, item in FarmVars.shop_items.items:
+					print(
+					    f"{key}: {item['name']} - Cost : {item['cost']} | Effect : {item['description']}"
+					)
+				print()
+				choice = input(
+				    "Enter the number of the item you want to buy or 'q' to go back.\n"
+				)
+				if choice != 'q':
+					farm.buy_shop_item(choice)
 				ClearScreen()
-				if action == "save":
-						save_game(farm)
-				elif action == "q":
-						print("Thanks for playing!")
-						break
-				elif farm.interactions_enabled:
-						if action == "h":
-								farm.harvest_cotton()
-						elif action == "b":
-								farm.buy_click_multiplier()
-						elif action == "a":
-								farm.buy_auto_cotton_multiplier()
-						elif action == "s":
-								print("Shop Items:")
-								for key, item in FarmVars.shop_items.items:
-									print(f"{key}: {item['name']} - Cost : {item['cost']} | Effect : {item['description']}")
-								print()
-								choice = input("Enter the number of the item you want to buy or 'q' to go back.\n")
-								if choice != 'q':
-										farm.buy_shop_item(choice)
-								ClearScreen()
-						elif action == "u":
-								print("Upgrades:")
-								for key, upgrade in FarmVars.upgrades.items():
-									print(f"{key}: {upgrade['name']} - Cost : {upgrade['cost']} | Effect : {upgrade['description']}")
-								print()
-								choice = input("Enter the number of the upgrade you want to buy or 'q' to go back.\n")
-								if choice != 'q':
-										farm.buy_upgrade(choice)
-								ClearScreen()
-				else:
-						print("Interactions are temporarily disabled due to an event.")
-				time.sleep(0.1)  # update speed
+			elif action == "u":
+				print("Upgrades:")
+				for key, upgrade in FarmVars.upgrades.items():
+					print(
+					    f"{key}: {upgrade['name']} - Cost : {upgrade['cost']} | Effect : {upgrade['description']}"
+					)
+				print()
+				choice = input(
+				    "Enter the number of the upgrade you want to buy or 'q' to go back.\n"
+				)
+				if choice != 'q':
+					farm.buy_upgrade(choice)
+				ClearScreen()
+		else:
+			print("Interactions are temporarily disabled due to an event.")
+		time.sleep(0.1)  # update speed
+
 
 if __name__ == "__main__":
 	main()
