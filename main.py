@@ -2,7 +2,32 @@ import json
 import os
 import random
 import time
+from cryptography.fernet import Fernet
 
+
+
+def generate_key():
+    key_file_path = "encryption_key.key"
+    if not os.path.exists(key_file_path):
+        key = Fernet.generate_key()
+        with open(key_file_path, "wb") as key_file:
+            key_file.write(key)
+        print("New encryption key generated and saved.")
+    else:
+        print("Existing encryption key loaded.")
+
+generate_key()
+
+def load_key():
+    """
+    Loads the Fernet key from the file.
+    """
+    with open("encryption_key.key", "rb") as key_file:
+        key = key_file.read()
+    return key
+
+key = load_key()
+cipher_suite = Fernet(key)
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -204,7 +229,7 @@ class Farm:
         print()
 
 def save_game(farm):
-    with open("savegame.json", "w") as file:
+    with open("savegame.json", "wb") as file:
         data = {
             "cotton": farm.cotton,
             "cotton_per_second": farm.cotton_per_second,
@@ -216,17 +241,24 @@ def save_game(farm):
             "total_clicks": farm.total_clicks,
             "money": farm.money,
             "current_season": farm.current_season,
+            "season_effects": farm.season_effects,
+            "shop_items": farm.shop_items,
+            "upgrades": farm.upgrades,
             "objectives": farm.objectives,
             "achievements": farm.achievements,
             "interactions_enabled": farm.interactions_enabled,
         }
-        json.dump(data, file)
-    print("Game saved.")
+        data_json = json.dumps(data).encode('utf-8')
+        encrypted_data = cipher_suite.encrypt(data_json)
+        file.write(encrypted_data)
+        print("Game saved.")
 
 def load_game():
     if os.path.exists("savegame.json"):
-        with open("savegame.json", "r") as file:
-            data = json.load(file)
+        with open("savegame.json", "rb") as file:
+            encrypted_data = file.read()
+            decrypted_data = cipher_suite.decrypt(encrypted_data)
+            data = json.loads(decrypted_data.decode('utf-8')) 
         farm = Farm()
         farm.cotton = data["cotton"]
         farm.cotton_per_second = data["cotton_per_second"]
@@ -238,6 +270,9 @@ def load_game():
         farm.total_clicks = data["total_clicks"]
         farm.money = data["money"]
         farm.current_season = data["current_season"]
+        farm.season_effects = data.get("season_effects", farm.season_effects)
+        farm.shop_items = data.get("shop_items", farm.shop_items)
+        farm.upgrades = data.get("upgrades", farm.upgrades)
         farm.objectives = data["objectives"]
         farm.achievements = data["achievements"]
         farm.interactions_enabled = data.get("interactions_enabled", True)
@@ -245,7 +280,7 @@ def load_game():
         return farm
     else:
         print("No saved game found.")
-        return Farm()  # return a new Farm instance instead
+        return Farm()
 
 def main_menu():
     print("Welcome to Cotton Farming Simulator!")
@@ -273,6 +308,7 @@ def main():
         if action == "save":
             save_game(farm)
         elif action == "q":
+            clear_screen()
             print("Thanks for playing!")
             break
         elif action == "h":
