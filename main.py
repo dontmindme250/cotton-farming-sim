@@ -2,32 +2,33 @@ import json
 import os
 import random
 import time
+from pathlib import Path
 from cryptography.fernet import Fernet
 
 
-
+game_data_directory = Path(Path.home(), ".my_farm_game")
+os.makedirs(game_data_directory, exist_ok=True)
 def generate_key():
-    key_file_path = "encryption_key.key"
-    if not os.path.exists(key_file_path):
+    key_file_path = game_data_directory / "encryption_key.key"
+    if not key_file_path.exists():
         key = Fernet.generate_key()
         with open(key_file_path, "wb") as key_file:
             key_file.write(key)
         print("New encryption key generated and saved.")
     else:
         print("Existing encryption key loaded.")
-
 generate_key()
-
 def load_key():
     """
     Loads the Fernet key from the file.
     """
-    with open("encryption_key.key", "rb") as key_file:
+    key_file_path = game_data_directory / "encryption_key.key"
+    with open(key_file_path, "rb") as key_file:
         key = key_file.read()
     return key
-
 key = load_key()
 cipher_suite = Fernet(key)
+
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -152,6 +153,8 @@ class Farm:
             season_effect = self.season_effects[self.current_season]["cotton_per_click"]
             self.cotton += int(self.cotton_per_click * self.click_multiplier * season_effect)
             self.total_clicks += 1
+            print(f"You harvested {int(self.cotton_per_click * self.click_multiplier * season_effect)} cotton!")
+            time.sleep(0.1)
 
     def buy_click_multiplier(self):
         if self.interactions_enabled:
@@ -159,8 +162,8 @@ class Farm:
                 self.cotton -= self.click_multiplier_cost
                 self.click_multiplier *= 2
                 self.click_multiplier_cost *= 2
-                clear_screen()
                 print("You bought a click multiplier!")
+                time.sleep(2)
             else:
                 print("Not enough cotton!")
 
@@ -170,8 +173,8 @@ class Farm:
                 self.cotton -= self.auto_cotton_multiplier_cost
                 self.auto_cotton_multiplier += 1
                 self.auto_cotton_multiplier_cost *= 2
-                clear_screen()
                 print("You bought an auto cotton multiplier!")
+                time.sleep(2)
             else:
                 print("Not enough cotton!")
 
@@ -185,8 +188,8 @@ class Farm:
                         self.cotton_per_second += item["effect"]
                     elif choice == "3":
                         self.auto_cotton_multiplier += 1
-                    clear_screen()
                     print(f"You bought {item['name']}!")
+                    time.sleep(2)
                 else:
                     print("Not enough money!")
 
@@ -200,8 +203,8 @@ class Farm:
                         self.cotton_per_click += upgrade["effect"]
                     elif choice in ["2", "3"]:
                         self.cotton_per_second += upgrade["effect"]
-                    clear_screen()
                     print(f"You bought {upgrade['name']}!")
+                    time.sleep(2)
                 else:
                     print("Not enough money!")
 
@@ -211,7 +214,6 @@ class Farm:
             self.cotton += int(self.auto_cotton_multiplier * self.cotton_per_second * season_effect)
 
     def display_status(self):
-        clear_screen()
         print(f"Money: {self.money}")
         print(f"Current Cotton: {self.cotton}")
         print(f"Total Clicks: {self.total_clicks}\n")
@@ -229,7 +231,8 @@ class Farm:
         print()
 
 def save_game(farm):
-    with open("savegame.json", "wb") as file:
+    save_game_path = game_data_directory / "savegame.json"
+    with open(save_game_path, "wb") as file:
         data = {
             "cotton": farm.cotton,
             "cotton_per_second": farm.cotton_per_second,
@@ -254,11 +257,12 @@ def save_game(farm):
         print("Game saved.")
 
 def load_game():
-    if os.path.exists("savegame.json"):
-        with open("savegame.json", "rb") as file:
+    save_game_path = game_data_directory / "savegame.json"
+    if save_game_path.exists():
+        with open(save_game_path, "rb") as file:
             encrypted_data = file.read()
             decrypted_data = cipher_suite.decrypt(encrypted_data)
-            data = json.loads(decrypted_data.decode('utf-8')) 
+            data = json.loads(decrypted_data.decode('utf-8'))
         farm = Farm()
         farm.cotton = data["cotton"]
         farm.cotton_per_second = data["cotton_per_second"]
@@ -270,12 +274,12 @@ def load_game():
         farm.total_clicks = data["total_clicks"]
         farm.money = data["money"]
         farm.current_season = data["current_season"]
-        farm.season_effects = data.get("season_effects", farm.season_effects)
-        farm.shop_items = data.get("shop_items", farm.shop_items)
-        farm.upgrades = data.get("upgrades", farm.upgrades)
+        farm.season_effects = data["season_effects"]
+        farm.shop_items = data["shop_items"]
+        farm.upgrades = data["upgrades"]
         farm.objectives = data["objectives"]
         farm.achievements = data["achievements"]
-        farm.interactions_enabled = data.get("interactions_enabled", True)
+        farm.interactions_enabled = data["interactions_enabled"]
         print("Game loaded.")
         return farm
     else:
@@ -303,6 +307,7 @@ def main_menu():
 def main():
     farm = main_menu()
     while True:
+        clear_screen()
         farm.display_status()
         action = input("Press 'h' to harvest cotton, 'b' to buy click multiplier, 'a' to buy auto cotton multiplier, 's' to open shop, 'u' to buy upgrade, 'save' to save game, or 'q' to quit.\n").lower()
         if action == "save":
