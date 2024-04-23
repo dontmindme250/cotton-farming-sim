@@ -1,3 +1,4 @@
+
 import json
 import os
 import random
@@ -5,6 +6,14 @@ import time
 from pathlib import Path
 from cryptography.fernet import Fernet
 
+# ANSI color codes
+class Color:
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    CYAN = '\033[96m'
+    MAGENTA = '\033[95m'
 
 game_data_directory = Path(Path.home(), ".my_farm_game")
 os.makedirs(game_data_directory, exist_ok=True)
@@ -14,9 +23,9 @@ def generate_key():
         key = Fernet.generate_key()
         with open(key_file_path, "wb") as key_file:
             key_file.write(key)
-        print("New encryption key generated and saved.")
+        print(Color.CYAN + "New encryption key generated and saved." + Color.RESET)
     else:
-        print("Existing encryption key loaded.")
+        print(Color.CYAN + "Existing encryption key loaded." + Color.RESET)
 generate_key()
 def load_key():
     """
@@ -146,14 +155,14 @@ class Farm:
             seasons = ["Spring", "Summer", "Autumn", "Winter"]
             self.current_season = random.choice(seasons)
             self.season_change_time = time.time() + random.randint(600, 900)
-            print(f"The season has changed to {self.current_season}.")
+            print(Color.MAGENTA + f"The season has changed to {self.current_season}." + Color.RESET)
 
     def harvest_cotton(self):
         if self.interactions_enabled:
             season_effect = self.season_effects[self.current_season]["cotton_per_click"]
             self.cotton += int(self.cotton_per_click * self.click_multiplier * season_effect)
             self.total_clicks += 1
-            print(f"You harvested {int(self.cotton_per_click * self.click_multiplier * season_effect)} cotton!")
+            print(Color.GREEN + f"You harvested {int(self.cotton_per_click * self.click_multiplier * season_effect)} cotton!" + Color.RESET)
             time.sleep(0.1)
 
     def buy_click_multiplier(self):
@@ -162,10 +171,10 @@ class Farm:
                 self.cotton -= self.click_multiplier_cost
                 self.click_multiplier *= 2
                 self.click_multiplier_cost *= 2
-                print("You bought a click multiplier!")
+                print(Color.YELLOW + "You bought a click multiplier!" + Color.RESET)
                 time.sleep(2)
             else:
-                print("Not enough cotton!")
+                print(Color.RED + "Not enough cotton!" + Color.RESET)
 
     def buy_auto_cotton_multiplier(self):
         if self.interactions_enabled:
@@ -173,10 +182,10 @@ class Farm:
                 self.cotton -= self.auto_cotton_multiplier_cost
                 self.auto_cotton_multiplier += 1
                 self.auto_cotton_multiplier_cost *= 2
-                print("You bought an auto cotton multiplier!")
+                print(Color.YELLOW + "You bought an auto cotton multiplier!" + Color.RESET)
                 time.sleep(2)
             else:
-                print("Not enough cotton!")
+                print(Color.RED + "Not enough cotton!" + Color.RESET)
 
     def buy_shop_item(self, choice):
         if self.interactions_enabled:
@@ -188,10 +197,10 @@ class Farm:
                         self.cotton_per_second += item["effect"]
                     elif choice == "3":
                         self.auto_cotton_multiplier += 1
-                    print(f"You bought {item['name']}!")
+                    print(Color.GREEN + f"You bought {item['name']}!" + Color.RESET)
                     time.sleep(2)
                 else:
-                    print("Not enough money!")
+                    print(Color.RED + "Not enough money!")
 
     def buy_upgrade(self, choice):
         if self.interactions_enabled:
@@ -203,10 +212,10 @@ class Farm:
                         self.cotton_per_click += upgrade["effect"]
                     elif choice in ["2", "3"]:
                         self.cotton_per_second += upgrade["effect"]
-                    print(f"You bought {upgrade['name']}!")
+                    print(Color.GREEN + f"You bought {upgrade['name']}!" + Color.RESET)
                     time.sleep(2)
                 else:
-                    print("Not enough money!")
+                    print(Color.RED + "Not enough money!")
 
     def auto_harvest(self):
         if self.interactions_enabled:
@@ -214,18 +223,18 @@ class Farm:
             self.cotton += int(self.auto_cotton_multiplier * self.cotton_per_second * season_effect)
 
     def display_status(self):
-        print(f"Money: {self.money}")
-        print(f"Current Cotton: {self.cotton}")
+        print(Color.GREEN + f"Money: {self.money}" + Color.RESET)
+        print(Color.GREEN + f"Current Cotton: {self.cotton}" + Color.RESET)
         print(f"Total Clicks: {self.total_clicks}\n")
         print(f"Cotton per Click: {self.cotton_per_click * self.click_multiplier}")
         print(f"Cotton per Second: {self.cotton_per_second}")
         print(f"Auto Cotton Multiplier: {self.auto_cotton_multiplier}\n")
         print(f"Auto Cotton Multiplier Cost: {self.auto_cotton_multiplier_cost}")
         print(f"Click Multiplier Cost: {self.click_multiplier_cost}\n")
-        print("Shop Items:")
+        print(Color.YELLOW + "Shop Items:" + Color.RESET)
         for key, item in self.shop_items.items():
             print(f"{key}: {item['name']} - Cost: {item['cost']} | Effect: {item['description']}")
-        print("\nUpgrades:")
+        print("\n" + Color.YELLOW + "Upgrades:" + Color.RESET)
         for key, upgrade in self.upgrades.items():
             print(f"{key}: {upgrade['name']} - Cost: {upgrade['cost']} | Effect: {upgrade['description']}")
         print()
@@ -254,7 +263,7 @@ def save_game(farm):
         data_json = json.dumps(data).encode('utf-8')
         encrypted_data = cipher_suite.encrypt(data_json)
         file.write(encrypted_data)
-        print("Game saved.")
+        print(Color.CYAN + "Game saved." + Color.RESET)
 
 def load_game():
     save_game_path = game_data_directory / "savegame.json"
@@ -280,10 +289,10 @@ def load_game():
         farm.objectives = data["objectives"]
         farm.achievements = data["achievements"]
         farm.interactions_enabled = data["interactions_enabled"]
-        print("Game loaded.")
+        print(Color.CYAN + "Game loaded." + Color.RESET)
         return farm
     else:
-        print("No saved game found.")
+        print(Color.RED + "No saved game found." + Color.RESET)
         return Farm()
 
 def main_menu():
@@ -301,7 +310,7 @@ def main_menu():
         print("Goodbye!")
         exit()
     else:
-        print("Invalid choice. Please try again.")
+        print(Color.RED + "Invalid choice. Please try again." + Color.RESET)
         return main_menu()
 
 def main():
@@ -323,7 +332,7 @@ def main():
         elif action == "a":
             farm.buy_auto_cotton_multiplier()
         elif action == "s":
-            print("Shop Items:")
+            print(Color.YELLOW + "Shop Items:" + Color.RESET)
             for key, item in farm.shop_items.items():
                 print(f"{key}: {item['name']} - Cost: {item['cost']} | Effect: {item['description']}")
             print()
@@ -331,7 +340,7 @@ def main():
             if choice != 'q':
                 farm.buy_shop_item(choice)
         elif action == "u":
-            print("Upgrades:")
+            print(Color.YELLOW + "Upgrades:" + Color.RESET)
             for key, upgrade in farm.upgrades.items():
                 print(f"{key}: {upgrade['name']} - Cost: {upgrade['cost']} | Effect: {upgrade['description']}")
             print()
